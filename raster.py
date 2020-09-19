@@ -69,36 +69,53 @@ def drawPolygon(p, win, color):
 	n = len(p)   # number of vertices in polygon
 	x = []       # x-coordinates of polygon on screen
 	y = []       # y-coordinates of polygon on screen
+
 	for point in p:
 		x.append(projectX(point[0], point[2]))
 		y.append(projectY(point[1], point[2]))
 
-	print("This the list of points:",p)
-	print("This is list y:",y)
+	# print("This the list of points:",p)
+	# print("This is list y:",y)
 
-	# find bounds on scan lines
-	# YOUR CODE GOES HERE
 
-	m = ((y2-y1)/(x2-x1))
-	lineEQ = m * (x2-x1) + y2
+	ymin = min(y)
+	ymax = max(y)
+	xmin = []
+	xmax = []
+
+	#create lists of infinity
+	for point in p:
+		xmin.append(float('inf'))
+		xmax.append(float('-inf'))
+
+	#attempt at drawing the lines but doesnt work
+	for i in range(len(p)):
+		m = (y[i+1] - y[i])/(x[i+1]-x[i])
+		lineEQ = m * (x[i+1]-x[i]) + y[i+1]
+		line = Line(Point(x[i], ymax[i]), Point(x[i+1], ymax[i]))
+		line.draw(win)
+
+	#does the comparison for correct xmin and max values, the "line" part is what im struggling with
+	for line in polygon:
+		for point in range(len(p)):
+			xmin[point] = min(xmin[point], x[point])
+			xmax[point] = max(xmax[point], x[point])
+
 	resolution = 3
-    # YOUR CODE GOES HERE
-	for each line in polygone:
-		for each point(x,y) on the line:
-			xmin[y] = min(xmin[y], x)
-			xmax[y] = max(xmax[y], x)
 
-	for each y value from ymin to ymax:
-		for each x value from xmin[y] to xmax[y]:
-			#color pixel(x,y)
+	#colors the pixel at point
+	for i in range(int(ymin),int(ymax)):
+		for j in range(xmin[int(ymin)], xmax[int(ymax)]):
+			drawPoint(j, i, 1, color, win)
+
+
     # The following draws a point at (x, y) of color 'color'
     # size controls the size of the point (to speed up drawing)
     # drawPoint(x, y, size, color, win)
     # for example:
     # drawPoint(100, 100, 1, color, win)
-
-
     # draws in the bounding polygon
+
 	for i in range(n):
 		x1 = int(x[i])
 		y1 = int(y[i])
@@ -106,6 +123,8 @@ def drawPolygon(p, win, color):
 		y2 = int(y[(i + 1) % n])
 		line = Line(Point(x1, y1), Point(x2, y2))
 		line.draw(win)
+
+
 
 def main():
     ''' Main program that runs everything '''
