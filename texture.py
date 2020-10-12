@@ -79,8 +79,6 @@ def drawPolygon(poly, w, texture):
             + (y2*(alpha)*(beta))
             + (y3*(1-alpha)*(beta)))
 
-
-
             color = texture[j][i]
             #print(x, y)
             drawTexel(w,
