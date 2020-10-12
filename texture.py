@@ -52,6 +52,35 @@ def drawPolygon(poly, w, texture):
     # Note 1: drawTexel(w, x, y, c) draws a texel at screen position (x, y) of color c
     # Note 2: texture[x][y] refers to the the texture color at (x, y) in the texture
 
+    x0 = poly[0][0]     #set up x points for interpolation
+    x1 = poly[1][0]
+    x2 = poly[2][0]
+    x3 = poly[3][0]
+
+    y0 = poly[0][1]     #set up y points for interpolation
+    y1 = poly[1][1]
+    y2 = poly[2][1]
+    y3 = poly[3][1]
+
+    for i in range(textureHeight):
+        for j in range(textureWidth):
+            alpha = j/textureWidth      #calculate alpha
+            beta = i/textureHeight      #calculate beta
+
+            x = x0*(1-alpha)*(1-beta)   #start x interpolation
+            + x1*(alpha)*(1-beta)
+            + x2*(alpha)*(beta)
+            + x3*(1-alpha)*(beta)
+
+            y = y0*(1-alpha)*(1-beta)   #start y interpolation
+            + y1*(alpha)*(1-beta)
+            + y2*(alpha)*(beta)
+            + y3*(1-alpha)*(beta)
+
+            x = int(x)
+            y = int(y)
+            color = texture[x][y]
+            drawTexel(w, x, y, color)   #draw
 
     w.update()
 
