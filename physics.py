@@ -42,6 +42,7 @@ class Ball:
         ### UPDATE CODE HERE ###
         x = (self.position[0] - ball2.position[0])**2
         y = (self.position[1] - ball2.position[1])**2
+
         d = math.sqrt(x + y)
         if (d <= (self.radius + ball2.radius)):
             return True
@@ -55,8 +56,11 @@ class Ball:
         #         parallel and perpendicular to collision vector. Then
         #         swap parallel components, keeping perpendicular ones same.
 
-        ball2.velocity = self.velocity
-        self.velocity = [0, 0]
+        selfV = self.velocity
+        ballV = ball2.velocity
+
+        ball2.velocity = selfV
+        self.velocity = ballV
 
         return
 
