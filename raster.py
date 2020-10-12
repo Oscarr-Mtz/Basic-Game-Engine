@@ -8,7 +8,7 @@ from random import *
 # Constants #
 pixHeight = 400    # height of screen in pixels
 pixWidth = 400     # width of screen in pixels
-d = 1.0            # distance of eye from screen in world units
+d = 1.0            # distance of eye  from screen in world units
 screenWidth = 1.0  # width of screen in world size
 screenHeight = 1.0 # height of screen in world size
 infinity = 100000  # needed for max and min
@@ -64,67 +64,56 @@ def drawPoint(x, y, size, color, win):
     pt.draw(win)
 
 
+def cmp(a, b):
+    ''' returns 1 if a>b, -1 if b>a, and 0 if equal '''
+    return (a > b) - (a < b)
+
 def drawPolygon(p, win, color):
-	''' draws polygon onto screen g using rasterization algorithm '''
-	n = len(p)   # number of vertices in polygon
-	x = []       # x-coordinates of polygon on screen
-	y = []       # y-coordinates of polygon on screen
+    ''' draws polygon onto screen g using rasterization algorithm '''
+    n = len(p)   # number of vertices in polygon
+    x = []       # x-coordinates of polygon on screen
+    y = []       # y-coordinates of polygon on screen
+    for point in p:
+        x.append(projectX(point[0], point[2]))
+        y.append(projectY(point[1], point[2]))
 
-	for point in p:
-		x.append(projectX(point[0], point[2]))
-		y.append(projectY(point[1], point[2]))
+    # get the upper and lower limits of the scanlines
+    minY = int(min(y))
+    maxY = int(max(y))
 
-	# print("This the list of points:",p)
-	# print("This is list y:",y)
+    # find bounds on scan lines
+    minX = [infinity for i in range(maxY - minY + 1)]
+    maxX = [-infinity for i in range(maxY - minY + 1)]
+    for i in range(n):
+        x1 = int(x[i])
+        y1 = int(y[i])
+        x2 = int(x[(i + 1) % n])
+        y2 = int(y[(i + 1) % n])
+        if x2 != x1:
+            m = float(y2 - y1)/(x2 - x1)
+            for xLine in range(x1, x2, cmp(x2, x1)):
+                yLine = int(y1 + m * (xLine - x1))
+                minX[yLine - minY] = min(minX[yLine - minY], xLine)
+                maxX[yLine - minY] = max(maxX[yLine - minY], xLine)
+        else:
+            for yLine in range(min(y1, y2), max(y1, y2)):
+                minX[yLine - minY] = min(minX[yLine - minY], x1)
+                maxX[yLine - minY] = max(maxX[yLine - minY], x1)
 
+    # now draw the scan lines
+    resolution = 3
+    for yDraw in range(minY, maxY, resolution):
+        for xDraw in range(minX[yDraw - minY], maxX[yDraw - minY], resolution):
+            drawPoint(xDraw, yDraw, resolution, color, win)
 
-	ymin = min(y)
-	ymax = max(y)
-	xmin = []
-	xmax = []
-
-	#create lists of infinity
-	for point in p:
-		xmin.append(float('inf'))
-		xmax.append(float('-inf'))
-
-	#attempt at drawing the lines but doesnt work
-	for i in range(len(p)):
-		m = (y[i+1] - y[i])/(x[i+1]-x[i])
-		lineEQ = m * (x[i+1]-x[i]) + y[i+1]
-		line = Line(Point(x[i], ymax[i]), Point(x[i+1], ymax[i]))
-		line.draw(win)
-
-	#does the comparison for correct xmin and max values, the "line" part is what im struggling with
-	for line in polygon:
-		for point in range(len(p)):
-			xmin[point] = min(xmin[point], x[point])
-			xmax[point] = max(xmax[point], x[point])
-
-	resolution = 3
-
-	#colors the pixel at point
-	for i in range(int(ymin),int(ymax)):
-		for j in range(xmin[int(ymin)], xmax[int(ymax)]):
-			drawPoint(j, i, 1, color, win)
-
-
-    # The following draws a point at (x, y) of color 'color'
-    # size controls the size of the point (to speed up drawing)
-    # drawPoint(x, y, size, color, win)
-    # for example:
-    # drawPoint(100, 100, 1, color, win)
     # draws in the bounding polygon
-
-	for i in range(n):
-		x1 = int(x[i])
-		y1 = int(y[i])
-		x2 = int(x[(i + 1) % n])
-		y2 = int(y[(i + 1) % n])
-		line = Line(Point(x1, y1), Point(x2, y2))
-		line.draw(win)
-
-
+    for i in range(n):
+        x1 = int(x[i])
+        y1 = int(y[i])
+        x2 = int(x[(i + 1) % n])
+        y2 = int(y[(i + 1) % n])
+        line = Line(Point(x1, y1), Point(x2, y2))
+        line.draw(win)
 
 def main():
     ''' Main program that runs everything '''
