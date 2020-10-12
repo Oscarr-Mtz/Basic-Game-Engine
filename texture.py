@@ -62,26 +62,33 @@ def drawPolygon(poly, w, texture):
     y2 = poly[2][1]
     y3 = poly[3][1]
 
+    #red = "#FF0000"
+
     for i in range(textureHeight):
         for j in range(textureWidth):
             alpha = j/textureWidth      #calculate alpha
             beta = i/textureHeight      #calculate beta
 
-            x = x0*(1-alpha)*(1-beta)   #start x interpolation
-            + x1*(alpha)*(1-beta)
-            + x2*(alpha)*(beta)
-            + x3*(1-alpha)*(beta)
+            x = (x0*(1-alpha)*(1-beta)   #start x interpolation
+            + (x1*(alpha)*(1-beta))
+            + (x2*(alpha)*(beta))
+            + (x3*(1-alpha)*(beta)))
 
-            y = y0*(1-alpha)*(1-beta)   #start y interpolation
-            + y1*(alpha)*(1-beta)
-            + y2*(alpha)*(beta)
-            + y3*(1-alpha)*(beta)
+            y = (y0*(1-alpha)*(1-beta)   #start y interpolation
+            + (y1*(alpha)*(1-beta))
+            + (y2*(alpha)*(beta))
+            + (y3*(1-alpha)*(beta)))
 
-            x = int(x)
-            y = int(y)
-            color = texture[x][y]
-            drawTexel(w, x, y, color)   #draw
 
+
+            color = texture[j][i]
+            #print(x, y)
+            drawTexel(w,
+            x*textureWidth + (1/2)*pixWidth, #modify to fit screen
+            y*textureHeight + (1/2)*pixHeight, #modify to fit screen
+            color)   #draw
+
+    #print("updating")
     w.update()
 
 # computes the average z value of a face
